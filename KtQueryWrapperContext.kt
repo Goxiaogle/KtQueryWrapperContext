@@ -9,7 +9,7 @@ inline fun <reified T> KtQueryWrapper() = KtQueryWrapper(T::class.java)
 inline fun <reified T: Any> KtQueryWrapperContext(noinline context: KtQueryWrapperContext<T>.() -> Unit) = KtQueryWrapperContext(T::class, context)
 
 class KtQueryWrapperContext<T : Any>(
-    private val entityClass: KClass<T>,
+    entityClass: KClass<T>,
     context: KtQueryWrapperContext<T>.() -> Unit
 ) : KtQueryWrapper<T>(entityClass.java) {
 
