@@ -6,7 +6,8 @@ import kotlin.reflect.KProperty
 
 inline fun <reified T> KtQueryWrapper() = KtQueryWrapper(T::class.java)
 
-inline fun <reified T: Any> KtQueryWrapperContext(noinline context: KtQueryWrapperContext<T>.() -> Unit) = KtQueryWrapperContext(T::class, context)
+inline fun <reified T : Any> KtQueryWrapperContext(noinline context: KtQueryWrapperContext<T>.() -> Unit) =
+    KtQueryWrapperContext(T::class, context)
 
 class KtQueryWrapperContext<T : Any>(
     entityClass: KClass<T>,
@@ -19,7 +20,7 @@ class KtQueryWrapperContext<T : Any>(
 
     private var columnAndData: ColumnAndData? = null
 
-    operator fun String?.unaryPlus() = ColumnAndData(null, this).also { columnAndData = it }
+    operator fun Any?.unaryPlus() = ColumnAndData(null, this).also { columnAndData = it }
 
     operator fun KProperty<*>.unaryPlus() = ColumnAndData(this, null).also { columnAndData = it }
 
@@ -41,8 +42,18 @@ class KtQueryWrapperContext<T : Any>(
         columnAndData = null
     }
 }
-fun <T : Any> KtQueryWrapper<T>.notEmpty(str: Any?, action: KtQueryWrapper<T>.() -> KtQueryWrapper<T>) =
-    if ((str is String && str.isNotEmpty()) || str != null) action() else this
+
+fun <T : Any> KtQueryWrapper<T>.notEmpty(target: Any?, action: KtQueryWrapper<T>.() -> KtQueryWrapper<T>): KtQueryWrapper<T> {
+    // Quick return
+    if(target === null)
+        return this
+    val result = when (target) {
+        is String -> target.isNotEmpty()
+        is Collection<*> -> !target.isEmpty()
+        else -> true
+    }
+    return if(result) action() else this
+}
 
 data class ColumnAndData(
     var column: KProperty<*>? = null,
