@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.kotlin.KtQueryWrapper
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-inline fun <reified T> KtQueryWrapper() = KtQueryWrapper(T::class.java)
+inline fun <reified T : Any> KtQueryWrapper() = KtQueryWrapper(T::class.java)
 
 inline fun <reified T : Any> KtQueryWrapperContext(noinline context: KtQueryWrapperContext<T>.() -> Unit) =
     KtQueryWrapperContext(T::class, context)
